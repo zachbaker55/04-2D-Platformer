@@ -22,9 +22,10 @@ var is_jumping = false
 var double_jumped = false
 var should_direction_flip = true # wether or not player controls (left/right) can flip the player sprite
 
-
 func _physics_process(_delta):
 	velocity.x = clamp(velocity.x,-max_move,max_move)
+	if (position.y > 600):
+		die()
 		
 #	if should_direction_flip:
 #		if direction < 0 and not $AnimatedSprite.flip_h: $AnimatedSprite.flip_h = true
@@ -81,4 +82,16 @@ func set_wall_raycasts(is_enabled):
 	$Wall/Right.enabled = is_enabled
 
 func die():
+	Global.modify_score(-5)
 	queue_free()
+
+
+func _on_Interactor_body_entered(body):
+	if body.name == "Keys":
+		body.take_key(global_position)
+		Global.modify_keys(1)
+		Global.modify_score(10)
+	if (body.name == "Locks" and Global.keys > 0):
+		body.unlock(global_position)
+		Global.modify_keys(-1)
+		Global.modify_score(10)
